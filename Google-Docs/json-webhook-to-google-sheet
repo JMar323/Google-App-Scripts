@@ -1,0 +1,30 @@
+function doPost(e) {
+
+  // Get the active spreadsheet that this app script is attached to.
+  var sheet = SpreadsheetApp.getActiveSheet();
+
+  // Parsing the data received from the webhook
+  var data = JSON.parse(e.postData.contents);
+
+  // Function to handle array inputs (e.g., from multi-select lists)
+  function processArray(value) {
+    if (Array.isArray(value)) {
+      return value.join(', '); // Joining the array elements with a comma and space
+    }
+    return value;
+  }
+
+  // Create an array of data parsed from the JSON, processing array inputs
+  var row = [
+    processArray(data.name),
+    processArray(data.email),
+    processArray(data.phone),
+    processArray(data.message)
+  ];
+
+  // Append the array of JSON data to the spreadsheet
+  sheet.appendRow(row);
+
+  return ContentService.createTextOutput(JSON.stringify({result: "success"}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
