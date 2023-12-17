@@ -1,0 +1,38 @@
+function doPost(e) {
+  // ID of the Google Doc you want to write to
+  var docId = '1y9wYe9_hu18fqX4mLNFaPm_T237KhV9n4cFJPCxG0t8';
+
+  // Open the Google Doc by its ID
+  var doc = DocumentApp.openById(docId);
+  var body = doc.getBody();
+
+  // Parsing the data received from the webhook
+  var data = JSON.parse(e.postData.contents);
+
+  // Function to handle array inputs (e.g., from multi-select lists)
+  function processArray(value) {
+    if (Array.isArray(value)) {
+      return value.join(', '); // Joining the array elements with a comma and space
+    }
+    return value;
+  }
+
+  // Creating the text to be added to the Google Doc
+  var textToAdd = 
+    'Name: ' + processArray(data.name) + '\n' +
+    'Email: ' + processArray(data.email) + '\n' +
+    'Phone: ' + processArray(data.phone) + '\n' +
+    'Message: ' + processArray(data.message) + '\n' +
+    'Time: ' + processArray(data.time) + '\n' +
+    'Guest: ' + processArray(data.guest) + '\n' +
+    'Meal: ' + processArray(data.meal) + '\n\n';
+
+  // Append the text to the Google Doc
+  body.appendParagraph(textToAdd);
+
+  // Save and close the document
+  doc.saveAndClose();
+
+  return ContentService.createTextOutput(JSON.stringify({result: "success"}))
+    .setMimeType(ContentService.MimeType.JSON);
+}
